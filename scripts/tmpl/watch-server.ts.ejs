@@ -1,0 +1,29 @@
+/**
+ * This file is generated from the watch-server.ts.ejs template.
+ * Its purpose is to connect to the watch server websocket and send a message
+ * to the server to indicate that the client is ready to refresh.
+ */
+
+import Nes from '@hapi/nes';
+import C from 'chalk';
+
+const serverWatchClient = new Nes.Client('ws://<%- host %>:<%- port %>');
+
+export const serverWatchConnect = async () => {
+
+    try {
+        serverWatchClient.onError = (e) => {
+
+            console.error(
+                C.red('watch server websocket error:'),
+                e.message
+            );
+        }
+        await serverWatchClient.connect();
+        await serverWatchClient.message({ server: true });
+    }
+    catch (e) {
+
+        console.error(e);
+    }
+}
