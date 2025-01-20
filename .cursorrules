@@ -1,0 +1,23 @@
+References to `Server` are always in reference to @hapi/hapi Server class.
+References to `Request` are always in reference to @hapi/hapi Request class.
+References to `Response` are always in reference to @hapi/hapi Response class.
+
+Application settings are stored in ServerApplicationState and are accessed via server.appSettings().
+Application settings are always validated in server/helpers/environment.ts
+
+EJS partials are always stored in views/partials and are named like my-sample-partial.ejs. They are typically scoped to a folder such as partials/head or partials/my-sample-subfolder.
+EJS layouts are always stored in views/layouts and are named like my-sample-layout.ejs.
+EJS pages are always stored in views/pages and are named like my-sample-page.ejs.
+EJS templates should be aware of the context defined in server/plugins/vision/**/*.ts.
+EJS templates should be aware of the helpers in views/helpers/**/*.ts.
+
+Markdown files are always stored in docs/**/*.md.
+Markdown files are always validated in server/plugins/md-docs/**/*.ts.
+Markdown files can contain frontmatter that:
+- contains SEO metadata via title, description, tags, date, image, and meta
+- contains cache data that is used to set route options cache as defined by RouteOptionsCache interface in @hapi/hapi
+- contains httpHeaders data that is used to set response httpHeaders
+- contains layout data that is used to set the layout for the page
+- can be published or not via published boolean
+- can be future-dated via date
+- is flagged as "updatedAt" by either "date" or the file's last modified date, whichever is more recent.

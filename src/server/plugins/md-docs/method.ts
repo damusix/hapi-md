@@ -1,14 +1,26 @@
 import { ServerMethodOptions} from '@hapi/hapi';
+
 import MarkdownIt from 'markdown-it';
+import MarkdownItAnchor from 'markdown-it-anchor';
+import MarkdownItTOC from 'markdown-it-table-of-contents';
 import MarkdownItFm from 'markdown-it-front-matter';
 import MarkdownItAbbr from 'markdown-it-abbr';
 import MarkdownItEmoji from 'markdown-it-emoji';
 import MarkdownItFootnote from 'markdown-it-footnote';
+import MarkdownTaskList from 'markdown-it-task-lists';
+
 import MarkdownItDO from '@digitalocean/do-markdownit';
 import Yaml from 'yaml';
 
 import { sha1, inMinutes, inHours } from '../../helpers';
 
+declare module '@hapi/hapi' {
+
+    interface ServerMethods {
+        markdown: typeof generateMarkdown;
+        addTocToMarkdown: typeof addTocToMarkdown;
+    }
+}
 
 type MdFileMetadata = {
     slug: string;
@@ -42,9 +54,12 @@ const markdown = new MarkdownIt({
     .use(MarkdownItAbbr)
     .use(MarkdownItEmoji.full)
     .use(MarkdownItFootnote)
+    .use(MarkdownItAnchor)
+    .use(MarkdownTaskList)
+    .use(MarkdownItTOC)
 ;
 
-const method = async (_: string, text: string) => {
+const generateMarkdown = async (_: string, text: string) => {
 
     const html = markdown.render(text);
 
@@ -54,34 +69,52 @@ const method = async (_: string, text: string) => {
     };
 }
 
-const options: ServerMethodOptions = {
+const addTocToMarkdown = async (text: string) => {
+
+    const _content = text;
+
+    const h1 = _content.match(/^# (.*)/m)?.[1];
+    let toc = `[[toc]]\n\n`;
+    let content = _content;
+
+    if (h1) {
+        toc = `# ${h1}<!-- omit from toc -->\n\n${toc}`;
+        content = _content.replace(`# ${h1}`, '');
+    }
+
+    return toc + content;
+}
+
+
+const options: (segment: string) => ServerMethodOptions = (segment) => ({
     bind: {
         markdown,
     },
     cache: {
         cache: 'memory',
-        segment: 'markdown',
+        segment,
         expiresIn: inHours(24),
         generateTimeout: 1000,
         staleIn: inHours(1),
-        staleTimeout: 100,
+        staleTimeout: 10,
     },
 
-    generateKey(path:string, text: string) {
+    generateKey(...args: any[]) {
 
-        return sha1(path + text);
+        return sha1(JSON.stringify(args));
     },
-}
+});
 
-declare module '@hapi/hapi' {
 
-    interface ServerMethods {
-        markdown: typeof method;
+export default [
+    {
+        name: 'markdown',
+        method: generateMarkdown,
+        options: options('markdown')
+    },
+    {
+        name: 'addTocToMarkdown',
+        method: addTocToMarkdown,
+        options: options('addTocToMarkdown')
     }
-}
-
-export default {
-    name: 'markdown',
-    method,
-    options
-};
+];

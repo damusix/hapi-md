@@ -1,11 +1,11 @@
 import { Plugin, ResponseObject, Request } from '@hapi/hapi';
 import Boom from '@hapi/boom';
-import Hoek from '@hapi/hoek'
+import Hoek, { stringify } from '@hapi/hoek'
 
-type LogEvent = {
+export type LogEvent = {
     time: number;
-    type: 'request' | 'server' | 'error' | 'log';
-
+    type: 'request' | 'server' | 'error' | 'log' | 'route';
+    isError?: boolean;
     auth?: unknown;
     channel?: string;
     completed?: number;
@@ -30,6 +30,7 @@ type LogEvent = {
     state?: unknown;
     statusCode?: number;
     tags?: string;
+    stack?: string;
 }
 
 type ReqLogEvent = LogEvent;
@@ -53,6 +54,7 @@ export type LoggerOpts = {
     pick?: (keyof LogEvent)[];
 
     handler?: (log: ReqLogEvent | LogEvent) => void;
+    stripStack?: boolean;
 }
 
 declare module '@hapi/hapi' {
@@ -69,6 +71,8 @@ const extractRequestData = (request: Request, _filters: LoggerOpts) => {
 
     const omit = filters.omit || [];
     const pick = filters.pick || [];
+
+    const shouldStripStack = filters.stripStack || false;
 
     const {
         info: {
@@ -96,21 +100,29 @@ const extractRequestData = (request: Request, _filters: LoggerOpts) => {
     } = request;
 
     const response = _response as ResponseObject;
-    const err = _response as Boom.Boom
+    const err = (_response as any)._error as Boom.Boom;
 
     let statusCode = response.statusCode;
     let type = 'request';
-
+    let data: unknown | undefined = undefined;
+    let stack: string | undefined = undefined;
+    let isError = false;
     if (
-        err.isBoom ||
+        err?.isBoom ||
         (response.statusCode && response.statusCode >= 400)
 
     ) {
-        type = 'error';
         statusCode = response.statusCode || err.output.statusCode;
+        stack = err.stack;
+        data = err.data;
+        isError = true;
     }
 
     const ip = headers['x-forwarded-for'] || remoteAddress;
+
+    if (shouldStripStack && stack) {
+        stack = stripStack(stack).trim();
+    }
 
     const _log = {
         time: Date.now(),
@@ -135,9 +147,13 @@ const extractRequestData = (request: Request, _filters: LoggerOpts) => {
         state: filters.stateFilter(state),
         auth,
         pre,
+        data,
+        stack,
+        isError,
     }
 
     for (const key of omit) {
+
         delete _log[key];
     }
 
@@ -149,6 +165,8 @@ const extractRequestData = (request: Request, _filters: LoggerOpts) => {
             picked[key] = _log[key];
         }
 
+        picked.type = type;
+        picked.isError = isError;
         return picked;
     }
 
@@ -162,6 +180,133 @@ const undefinedOrFunc = (
 
     Hoek.assert(opt === undefined || typeof opt === 'function', msg)
 );
+
+
+export const jsonPrint = (obj: LogEvent) => process.stdout.write(stringify(obj) + '\n')
+
+const rgb = (r: number, g: number, b: number) => `\x1b[38;2;${r};${g};${b}m`;
+
+const c = {
+    red: rgb(175, 0, 0),
+    green: rgb(0, 175, 0),
+    yellow: rgb(225, 225, 0),
+    blue: rgb(0, 0, 175),
+    blue2: rgb(0, 160, 225),
+    magenta: rgb(175, 0, 175),
+    cyan: rgb(0, 220, 220),
+    white: rgb(240, 240, 240),
+    gray: rgb(128, 128, 128),
+    black: rgb(0, 0, 0),
+    reset: '\x1b[0m',
+}
+
+type Loggable = { toString: () => string }
+
+const loggable = (...txt: Loggable[]) => txt.filter(Boolean).join(' ');
+const colored = (color: string) => (...txt: Loggable[]) => {
+
+    const msg = loggable(txt);
+
+    if (!msg) return '';
+
+    return `${color}${msg}${c.reset}`
+};
+
+const red = colored(c.red);
+const green = colored(c.green);
+const yellow = colored(c.yellow);
+const blue = colored(c.blue);
+const blue2 = colored(c.blue2);
+const magenta = colored(c.magenta);
+const cyan = colored(c.cyan);
+const white = colored(c.white);
+const gray = colored(c.gray);
+const black = colored(c.black);
+
+const types = {
+    server: colored(c.cyan),
+    route: colored(c.blue2),
+    log: colored(c.green),
+    error: colored(c.red),
+    request: colored(c.gray),
+}
+
+const icons = {
+    server: '🔌',
+    route: '⚡',
+    log: '✨',
+    error: '🚨',
+    request: '🚀'
+}
+
+const stripStack = (stack: string) => stack
+    .split('\n')
+    .filter(line => !line.includes('node_modules'))
+    .join('\n')
+;
+
+
+
+export const prettyPrint = (log: LogEvent) => {
+
+    const time = gray(
+        new Date(log.time)
+            .toISOString()
+            .split('T').join(' ')
+            .split('.')[0]
+    );
+    let ip = gray(log.ip);
+
+    const logIcon = icons[log.type] || icons.log;
+    const logFn = types[log.type] || types.log;
+    let type = logFn(log.type);
+    let statusCode = green(log.statusCode);
+    let method = yellow(log.method);
+    let path = white(log.path);
+
+    let message = log.message ? white(log.message) : undefined;
+    let stack: string | undefined = undefined;
+
+    if (log.isError) {
+        type = red(log.type);
+        statusCode = red(log.statusCode);
+        stack = '\n' + red(log.stack) + '\n';
+    }
+
+    let query = undefined as string
+    let payload = undefined as string
+    let params = undefined as string
+    let headers = undefined as string
+    let state = undefined as string
+
+    if (log.type === 'request') {
+
+        query = stringify(log.query, null, 2)
+        state = log.state && '\nState: ' + stringify(log.state, null, 2) + '\n'
+        payload = log.payload && '\nPayload: ' + stringify(log.payload, null, 2) + '\n'
+        params = log.params && '\nParams: ' + stringify(log.params, null, 2) + '\n'
+        headers = log.headers && '\nHeaders: ' + stringify(log.headers, null, 2) + '\n'
+    }
+
+    process.stdout.write(
+        loggable(
+            logIcon,
+            time,
+            ip,
+            type,
+            statusCode,
+            method,
+            path,
+            query,
+            payload,
+            params,
+            headers,
+            state,
+            message || '',
+            stack
+        ) + '\n'
+    )
+}
 
 export const plugin: Plugin<LoggerOpts> = {
 
@@ -201,6 +346,7 @@ export const plugin: Plugin<LoggerOpts> = {
                 stateFilter,
                 omit: opts.omit,
                 pick: opts.pick,
+                stripStack: opts.stripStack,
             });
 
             handler(_log);
@@ -210,7 +356,7 @@ export const plugin: Plugin<LoggerOpts> = {
 
             handler({
                 type: 'server',
-                message: 'Server started',
+                message: `Server started on ${server.info.uri}`,
                 time: Date.now(),
             });
         });
@@ -248,7 +394,7 @@ export const plugin: Plugin<LoggerOpts> = {
             }
 
             handler({
-                type: 'error',
+                type,
                 message,
                 timestamp,
                 channel,
@@ -266,7 +412,7 @@ export const plugin: Plugin<LoggerOpts> = {
             } = route;
 
             handler({
-                type: 'server',
+                type: 'route',
                 message: 'Route added',
                 time: Date.now(),
                 path,

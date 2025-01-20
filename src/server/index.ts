@@ -16,6 +16,36 @@ import AppPlugins from './plugins';
 import AppRoutes from './routes';
 import AppMethods from './methods';
 
+import {
+    Policies,
+    Plugins,
+    Modules,
+    Redirects,
+    Metadata
+} from './data';
+
+declare module '@hapi/hapi' {
+    interface ServerApplicationState {
+        url: string;
+        githubToken: string;
+        data: {
+            policies: typeof Policies;
+            plugins: typeof Plugins;
+            modules: typeof Modules;
+            redirects: typeof Redirects;
+            metadata: typeof Metadata;
+        };
+    }
+
+    interface Server {
+        appSettings: () => ServerApplicationState;
+    }
+
+    interface Request {
+        appSettings: () => ServerApplicationState;
+    }
+}
+
 const deployment = async () => {
 
     /**
@@ -34,14 +64,28 @@ const deployment = async () => {
      * Create a new server instance
      */
     const server = Hapi.server({
-        port: 3000,
+        port: process.env.APP_PORT,
         host: 'localhost',
         routes: {
             files: {
                 relativeTo: Path.join(__dirname, 'assets')
             }
+        },
+        app: {
+            githubToken: process.env.GITHUB_TOKEN,
+            url: process.env.APP_URL,
+            data: {
+                policies: Policies,
+                plugins: Plugins,
+                modules: Modules,
+                redirects: Redirects,
+                metadata: Metadata
+            }
         }
     });
+
+    server.decorate('server', 'appSettings', () => server.settings.app);
+    server.decorate('request', 'appSettings', () => server.settings.app);
 
     /**
      * Use the Joi as the validator
@@ -70,9 +114,34 @@ const deployment = async () => {
     const manager = Exiting.createManager(server, { exitTimeout: inMinutes(0.5) });
 
     /**
+     * Handle the redirects
+     */
+    server.ext('onRequest', (request, h) => {
+
+        const { permanent, temporary } = request.appSettings().data.redirects;
+
+        if (permanent[request.path]) {
+            return h
+                .redirect(permanent[request.path])
+                .permanent()
+                .takeover()
+            ;
+        }
+
+        if (temporary[request.path]) {
+            return h
+                .redirect(temporary[request.path])
+                .temporary()
+                .takeover()
+            ;
+        }
+
+        return h.continue;
+    });
+
+    /**
      * Build the server
      */
-
     await registerMethods(server, AppMethods);
 
     await server.register(

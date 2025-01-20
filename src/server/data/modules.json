@@ -1,0 +1,801 @@
+{
+    "accept": {
+        "name": "accept",
+        "versions": [
+            {
+                "name": "6.0.3",
+                "branch": "master"
+            },
+            {
+                "name": "5.0.2",
+                "branch": "v5"
+            }
+        ],
+        "description": "HTTP Accept-* headers parsing.",
+        "link": "https://github.com/hapijs/accept",
+        "isPlugin": false
+    },
+    "ammo": {
+        "name": "ammo",
+        "versions": [
+            {
+                "name": "6.0.1",
+                "branch": "master"
+            },
+            {
+                "name": "5.0.1",
+                "branch": "v5"
+            }
+        ],
+        "description": "HTTP Range processing utilities.",
+        "link": "https://github.com/hapijs/ammo",
+        "isPlugin": false
+    },
+    "b64": {
+        "name": "b64",
+        "versions": [
+            {
+                "name": "6.0.1",
+                "branch": "master"
+            },
+            {
+                "name": "5.0.0",
+                "branch": "v5"
+            }
+        ],
+        "description": "Base64 streaming encoder and decoder.",
+        "link": "https://github.com/hapijs/b64",
+        "isPlugin": false
+    },
+    "basic": {
+        "name": "basic",
+        "versions": [
+            {
+                "name": "7.0.2",
+                "branch": "master"
+            }
+        ],
+        "description": "Basic authentication plugin.",
+        "link": "https://github.com/hapijs/basic",
+        "isPlugin": true
+    },
+    "bell": {
+        "name": "bell",
+        "versions": [
+            {
+                "name": "13.0.2",
+                "branch": "master"
+            },
+            {
+                "name": "12.3.0",
+                "branch": "v12"
+            }
+        ],
+        "description": "Third-party login plugin for hapi.js.",
+        "link": "https://github.com/hapijs/bell",
+        "isPlugin": true
+    },
+    "boom": {
+        "name": "boom",
+        "versions": [
+            {
+                "name": "10.0.1",
+                "branch": "master"
+            },
+            {
+                "name": "9.1.4",
+                "branch": "v9"
+            }
+        ],
+        "description": "HTTP-friendly error objects.",
+        "link": "https://github.com/hapijs/boom",
+        "isPlugin": false
+    },
+    "bossy": {
+        "name": "bossy",
+        "versions": [
+            {
+                "name": "6.0.1",
+                "branch": "master"
+            },
+            {
+                "name": "5.1.0",
+                "branch": "v5"
+            }
+        ],
+        "description": "Command line options parser.",
+        "link": "https://github.com/hapijs/bossy",
+        "isPlugin": false
+    },
+    "bounce": {
+        "name": "bounce",
+        "versions": [
+            {
+                "name": "3.0.1",
+                "branch": "master"
+            },
+            {
+                "name": "2.0.0",
+                "branch": "v2"
+            }
+        ],
+        "description": "Selective error catching and rewrite rules.",
+        "link": "https://github.com/hapijs/bounce",
+        "isPlugin": false
+    },
+    "bourne": {
+        "name": "bourne",
+        "versions": [
+            {
+                "name": "3.0.0",
+                "branch": "master"
+            },
+            {
+                "name": "2.0.0",
+                "branch": "v2"
+            }
+        ],
+        "description": "JSON parse with prototype poisoning protection.",
+        "link": "https://github.com/hapijs/bourne",
+        "isPlugin": false
+    },
+    "call": {
+        "name": "call",
+        "versions": [
+            {
+                "name": "9.0.1",
+                "branch": "master"
+            },
+            {
+                "name": "8.0.1",
+                "branch": "v8"
+            }
+        ],
+        "description": "HTTP Router.",
+        "link": "https://github.com/hapijs/call",
+        "isPlugin": false
+    },
+    "catbox": {
+        "name": "catbox",
+        "versions": [
+            {
+                "name": "12.1.1",
+                "branch": "master"
+            },
+            {
+                "name": "11.1.1",
+                "branch": "v11"
+            }
+        ],
+        "description": "Multi-strategy object caching service.",
+        "link": "https://github.com/hapijs/catbox",
+        "isPlugin": false
+    },
+    "catbox-memcached": {
+        "name": "catbox-memcached",
+        "versions": [
+            {
+                "name": "4.0.0",
+                "branch": "master"
+            },
+            {
+                "name": "3.0.0",
+                "branch": "v3"
+            }
+        ],
+        "description": "Memcached adapter for catbox.",
+        "link": "https://github.com/hapijs/catbox-memcached",
+        "isPlugin": false
+    },
+    "catbox-memory": {
+        "name": "catbox-memory",
+        "versions": [
+            {
+                "name": "6.0.0",
+                "branch": "master"
+            },
+            {
+                "name": "5.0.1",
+                "branch": "v5"
+            }
+        ],
+        "description": "Memory adapter for catbox.",
+        "link": "https://github.com/hapijs/catbox-memory",
+        "isPlugin": false
+    },
+    "catbox-object": {
+        "name": "catbox-object",
+        "versions": [
+            {
+                "name": "3.0.0",
+                "branch": "master"
+            },
+            {
+                "name": "2.0.2",
+                "branch": "v2"
+            }
+        ],
+        "description": "Object cache for catbox.",
+        "link": "https://github.com/hapijs/catbox-object",
+        "isPlugin": false
+    },
+    "catbox-redis": {
+        "name": "catbox-redis",
+        "versions": [
+            {
+                "name": "7.0.2",
+                "branch": "master"
+            },
+            {
+                "name": "6.1.0",
+                "branch": "v6"
+            }
+        ],
+        "description": "Redis adapter for catbox.",
+        "link": "https://github.com/hapijs/catbox-redis",
+        "isPlugin": false
+    },
+    "code": {
+        "name": "code",
+        "versions": [
+            {
+                "name": "9.0.3",
+                "branch": "master"
+            },
+            {
+                "name": "8.0.1",
+                "branch": "v8"
+            }
+        ],
+        "description": "BDD assertion library.",
+        "link": "https://github.com/hapijs/code",
+        "isPlugin": false
+    },
+    "content": {
+        "name": "content",
+        "versions": [
+            {
+                "name": "7.0.0",
+                "branch": "master"
+            },
+            {
+                "name": "6.0.0",
+                "branch": "v6"
+            }
+        ],
+        "description": "HTTP Content-* headers parsing.",
+        "link": "https://github.com/hapijs/content",
+        "isPlugin": false
+    },
+    "cookie": {
+        "name": "cookie",
+        "versions": [
+            {
+                "name": "12.0.1",
+                "branch": "master"
+            },
+            {
+                "name": "11.0.2",
+                "branch": "v11"
+            }
+        ],
+        "description": "Cookie authentication plugin.",
+        "link": "https://github.com/hapijs/cookie",
+        "isPlugin": true
+    },
+    "crumb": {
+        "name": "crumb",
+        "versions": [
+            {
+                "name": "9.0.1",
+                "branch": "master"
+            },
+            {
+                "name": "8.0.1",
+                "branch": "v8"
+            }
+        ],
+        "description": "CSRF crumb generation and validation plugin.",
+        "link": "https://github.com/hapijs/crumb",
+        "isPlugin": true
+    },
+    "cryptiles": {
+        "name": "cryptiles",
+        "versions": [
+            {
+                "name": "6.0.1",
+                "branch": "master"
+            },
+            {
+                "name": "5.0.0",
+                "branch": "v5"
+            }
+        ],
+        "description": "General purpose crypto utilities.",
+        "link": "https://github.com/hapijs/cryptiles",
+        "isPlugin": false
+    },
+    "eslint-plugin": {
+        "name": "eslint-plugin",
+        "versions": [
+            {
+                "name": "7.0.1",
+                "branch": "master"
+            },
+            {
+                "name": "6.0.0",
+                "branch": "v6"
+            }
+        ],
+        "description": "ESLint plugin for hapi.",
+        "link": "https://github.com/hapijs/eslint-plugin",
+        "isPlugin": false
+    },
+    "file": {
+        "name": "file",
+        "versions": [
+            {
+                "name": "3.0.0",
+                "branch": "master"
+            },
+            {
+                "name": "2.0.0",
+                "branch": "v2"
+            }
+        ],
+        "description": "General purpose file utilities.",
+        "link": "https://github.com/hapijs/file",
+        "isPlugin": false
+    },
+    "glue": {
+        "name": "glue",
+        "versions": [
+            {
+                "name": "9.0.1",
+                "branch": "master"
+            },
+            {
+                "name": "8.0.0",
+                "branch": "v8"
+            }
+        ],
+        "description": "Server composer for hapi.js.",
+        "link": "https://github.com/hapijs/glue",
+        "isPlugin": false
+    },
+    "h2o2": {
+        "name": "h2o2",
+        "versions": [
+            {
+                "name": "10.0.3",
+                "branch": "master"
+            },
+            {
+                "name": "9.1.0",
+                "branch": "v9"
+            }
+        ],
+        "description": "Proxy handler plugin for hapi.js.",
+        "link": "https://github.com/hapijs/h2o2",
+        "isPlugin": true
+    },
+
+    "heavy": {
+        "name": "heavy",
+        "versions": [
+            {
+                "name": "8.0.1",
+                "branch": "master"
+            },
+            {
+                "name": "7.0.1",
+                "branch": "v7"
+            }
+        ],
+        "description": "Measure process load.",
+        "link": "https://github.com/hapijs/heavy",
+        "isPlugin": false
+    },
+    "hoek": {
+        "name": "hoek",
+        "versions": [
+            {
+                "name": "11.0.4",
+                "branch": "master"
+            },
+            {
+                "name": "9.3.0",
+                "branch": "v9"
+            }
+        ],
+        "description": "Utility methods for the hapi ecosystem.",
+        "link": "https://github.com/hapijs/hoek",
+        "isPlugin": false
+    },
+    "inert": {
+        "name": "inert",
+        "versions": [
+            {
+                "name": "7.1.0",
+                "branch": "master"
+            },
+            {
+                "name": "6.0.6",
+                "branch": "v6"
+            }
+        ],
+        "description": "Static file and directory handlers plugin for hapi.js.",
+        "link": "https://github.com/hapijs/inert",
+        "isPlugin": true
+    },
+    "iron": {
+        "name": "iron",
+        "versions": [
+            {
+                "name": "7.0.1",
+                "branch": "master"
+            },
+            {
+                "name": "6.0.0",
+                "branch": "v6"
+            }
+        ],
+        "description": "Encapsulated tokens (encrypted and mac'ed objects).",
+        "link": "https://github.com/hapijs/iron",
+        "isPlugin": false
+    },
+    "jwt": {
+        "name": "jwt",
+        "versions": [
+            {
+                "name": "4.0.0",
+                "branch": "master"
+            },
+            {
+                "name": "3.0.0",
+                "branch": "v3"
+            }
+        ],
+        "description": "JSON Web Token (JWT) Authentication.",
+        "link": "https://github.com/hapijs/jwt",
+        "isPlugin": true
+    },
+    "lab": {
+        "name": "lab",
+        "versions": [
+            {
+                "name": "25.2.0",
+                "branch": "master"
+            },
+            {
+                "name": "24.2.1",
+                "branch": "v24"
+            }
+        ],
+        "description": "Test utility.",
+        "link": "https://github.com/hapijs/lab",
+        "isPlugin": false
+    },
+    "log": {
+        "name": "log",
+        "versions": [
+            {
+                "name": "3.0.0",
+                "branch": "master"
+            },
+            {
+                "name": "2.0.0",
+                "branch": "v2"
+            }
+        ],
+        "description": "Logging service.",
+        "link": "https://github.com/hapijs/log",
+        "isPlugin": false
+    },
+    "mimos": {
+        "name": "mimos",
+        "versions": [
+            {
+                "name": "7.0.1",
+                "branch": "master"
+            },
+            {
+                "name": "6.0.0",
+                "branch": "v6"
+            }
+        ],
+        "description": "Mime database interface.",
+        "link": "https://github.com/hapijs/mimos",
+        "isPlugin": false
+    },
+    "nes": {
+        "name": "nes",
+        "versions": [
+            {
+                "name": "13.0.1",
+                "branch": "master"
+            },
+            {
+                "name": "12.0.4",
+                "branch": "v12"
+            }
+        ],
+        "description": "WebSocket adapter plugin for hapi routes.",
+        "link": "https://github.com/hapijs/nes",
+        "isPlugin": true
+    },
+    "nigel": {
+        "name": "nigel",
+        "versions": [
+            {
+                "name": "5.0.1",
+                "branch": "master"
+            },
+            {
+                "name": "4.0.2",
+                "branch": "v4"
+            }
+        ],
+        "description": "Stream parser.",
+        "link": "https://github.com/hapijs/nigel",
+        "isPlugin": false
+    },
+    "oppsy": {
+        "name": "oppsy",
+        "versions": [
+            {
+                "name": "4.0.0",
+                "branch": "master"
+            },
+            {
+                "name": "3.0.0",
+                "branch": "v3"
+            }
+        ],
+        "description": "Server monitoring.",
+        "link": "https://github.com/hapijs/oppsy",
+        "isPlugin": false
+    },
+    "pez": {
+        "name": "pez",
+        "versions": [
+            {
+                "name": "7.0.0",
+                "branch": "master"
+            },
+            {
+                "name": "6.0.0",
+                "branch": "v6"
+            }
+        ],
+        "description": "Multipart parser.",
+        "link": "https://github.com/hapijs/pez",
+        "isPlugin": false
+    },
+    "podium": {
+        "name": "podium",
+        "versions": [
+            {
+                "name": "5.0.3",
+                "branch": "master"
+            },
+            {
+                "name": "4.0.1",
+                "branch": "v4"
+            }
+        ],
+        "description": "Node.js event emitter with extra features.",
+        "link": "https://github.com/hapijs/podium",
+        "isPlugin": false
+    },
+
+    "scooter": {
+        "name": "scooter",
+        "versions": [
+            {
+                "name": "7.0.0",
+                "branch": "master"
+            },
+            {
+                "name": "6.0.1",
+                "branch": "v6"
+            }
+        ],
+        "description": "User-agent information plugin for hapi.",
+        "link": "https://github.com/hapijs/scooter",
+        "isPlugin": true
+    },
+    "shot": {
+        "name": "shot",
+        "versions": [
+            {
+                "name": "6.0.1",
+                "branch": "master"
+            },
+            {
+                "name": "5.0.1",
+                "branch": "v5"
+            }
+        ],
+        "description": "Injects a fake HTTP request/response into a node HTTP server.",
+        "link": "https://github.com/hapijs/shot",
+        "isPlugin": false
+    },
+    "somever": {
+        "name": "somever",
+        "versions": [
+            {
+                "name": "4.0.0",
+                "branch": "master"
+            },
+            {
+                "name": "3.0.1",
+                "branch": "v3"
+            }
+        ],
+        "description": "Semantic version parser and utilities.",
+        "link": "https://github.com/hapijs/somever",
+        "isPlugin": false
+    },
+    "statehood": {
+        "name": "statehood",
+        "versions": [
+            {
+                "name": "8.0.1",
+                "branch": "master"
+            },
+            {
+                "name": "7.0.4",
+                "branch": "v7"
+            }
+        ],
+        "description": "HTTP state management.",
+        "link": "https://github.com/hapijs/statehood",
+        "isPlugin": false
+    },
+    "subtext": {
+        "name": "subtext",
+        "versions": [
+            {
+                "name": "8.0.0",
+                "branch": "master"
+            },
+            {
+                "name": "7.0.4",
+                "branch": "v7"
+            }
+        ],
+        "description": "HTTP payload parser.",
+        "link": "https://github.com/hapijs/subtext",
+        "isPlugin": false
+    },
+    "teamwork": {
+        "name": "teamwork",
+        "versions": [
+            {
+                "name": "6.0.0",
+                "branch": "master"
+            },
+            {
+                "name": "5.1.0",
+                "branch": "v5"
+            }
+        ],
+        "description": "Wait for multiple callback events.",
+        "link": "https://github.com/hapijs/teamwork",
+        "isPlugin": false
+    },
+    "topo": {
+        "name": "topo",
+        "versions": [
+            {
+                "name": "6.0.2",
+                "branch": "master"
+            },
+            {
+                "name": "5.0.0",
+                "branch": "v5"
+            }
+        ],
+        "description": "Topological sorting with grouping support.",
+        "link": "https://github.com/hapijs/topo",
+        "isPlugin": false
+    },
+    "vise": {
+        "name": "vise",
+        "versions": [
+            {
+                "name": "5.0.1",
+                "branch": "master",
+                "license": "BSD",
+                "node": "16, 18, 20"
+            },
+            {
+                "name": "4.0.0",
+                "branch": "v4",
+                "license": "BSD",
+                "node": "16, 18, 20"
+            }
+        ],
+        "versionsArray": [
+            "5.0.1",
+            "4.0.0"
+        ],
+        "api": false,
+        "isPlugin": false,
+        "5.0.1": {
+            "menu": "",
+            "api": "",
+            "intro": "",
+            "example": "",
+            "usage": "",
+            "faq": "",
+            "advanced": "",
+            "license": "BSD"
+        },
+        "4.0.0": {
+            "menu": "",
+            "api": "",
+            "intro": "",
+            "example": "",
+            "usage": "",
+            "faq": "",
+            "advanced": "",
+            "license": "BSD"
+        },
+        "slogan": "Treat multiple buffers as one.",
+        "forks": 13,
+        "stars": 7,
+        "date": "2024-10-23T15:41:23Z",
+        "updated": "Wed Oct 23 2024",
+        "link": "https://github.com/hapijs/vise"
+    },
+    "vision": {
+        "name": "vision",
+        "versions": [
+            {
+                "name": "6.1.0",
+                "branch": "master"
+            },
+            {
+                "name": "5.0.0",
+                "branch": "v5"
+            }
+        ],
+        "description": "Template rendering support for hapi.js.",
+        "link": "https://github.com/hapijs/vision",
+        "isPlugin": true
+    },
+    "wreck": {
+        "name": "wreck",
+        "versions": [
+            {
+                "name": "18.1.0",
+                "branch": "master"
+            },
+            {
+                "name": "17.2.0",
+                "branch": "v17"
+            }
+        ],
+        "description": "HTTP client utilities.",
+        "link": "https://github.com/hapijs/wreck",
+        "isPlugin": false
+    },
+    "yar": {
+        "name": "yar",
+        "versions": [
+            {
+                "name": "11.0.2",
+                "branch": "master"
+            },
+            {
+                "name": "10.1.1",
+                "branch": "v11"
+            }
+        ],
+        "description": "A hapi session manager.",
+        "link": "https://github.com/hapijs/yar",
+        "isPlugin": true
+    }
+}

@@ -1,0 +1,51 @@
+[
+    {
+        "slug": "contributing",
+        "title": "Contributing",
+        "description": "Contributing to hapi",
+        "metadata": {},
+        "githubLink": "https://api.github.com/repos/hapijs/.github/contents/CONTRIBUTING.md"
+    },
+    {
+        "slug": "coc",
+        "title": "Code of Conduct",
+        "description": "hapi Code of Conduct",
+        "metadata": {},
+        "githubLink": "https://api.github.com/repos/hapijs/.github/contents/CODE_OF_CONDUCT.md"
+    },
+    {
+        "slug": "security",
+        "title": "Security",
+        "description": "hapi Security Policy",
+        "metadata": {},
+        "githubLink": "https://api.github.com/repos/hapijs/.github/contents/SECURITY.md"
+    },
+    {
+        "slug": "styleguide",
+        "title": "Style Guide",
+        "description": "hapi Style Guide",
+        "metadata": {},
+        "githubLink": "https://api.github.com/repos/hapijs/assets/contents/STYLE.md"
+    },
+    {
+        "slug": "license",
+        "title": "License",
+        "description": "hapi License Information",
+        "metadata": {},
+        "githubLink": "https://api.github.com/repos/hapijs/.github/contents/LICENSE.md"
+    },
+    {
+        "slug": "sponsors",
+        "title": "Sponsors",
+        "description": "hapi Sponsors and Support",
+        "metadata": {},
+        "githubLink": "https://api.github.com/repos/hapijs/.github/contents/SPONSORS.md"
+    },
+    {
+        "slug": "support",
+        "title": "Support",
+        "description": "hapi Support Guidelines",
+        "metadata": {},
+        "githubLink": "https://api.github.com/repos/hapijs/.github/contents/SUPPORT.md"
+    }
+]

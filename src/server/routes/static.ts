@@ -10,6 +10,15 @@ const assets: ServerRoute = {
             index: true,
             listing: true
         }
+    },
+    options: {
+        app: {
+            excludeFromFeed: true,
+        },
+        cache: {
+            expiresIn: 60 * 60 * 24 * 30, // 30 days
+            privacy: 'private',
+        }
     }
 }
 

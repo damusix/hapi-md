@@ -20,7 +20,7 @@ export const dependencyInjectServer = <T extends unknown[]>(server: Server, thin
             }
 
             return thing;
-        })
+        }).flat()
     )
 };
 
@@ -33,18 +33,19 @@ const methodSchema = Joi.object({
 
 export type MethodConfig = {
     name: string;
-    method: <P extends unknown[] = unknown[], R = unknown>(...args: P) => R;
+    method: (...args: any[]) => any;
     options?: ServerMethodOptions;
 }
 
-export const registerMethods = async (server: Server, _methods: MethodConfig[]) => {
-
-    Joi.assert(
-        _methods,
-        Joi.array().items(methodSchema),
-    );
+export type Methods = MethodConfig | ServerDependentFn<MethodConfig | MethodConfig[]>;
+export const registerMethods = async (server: Server, _methods: Methods[]) => {
 
     const methods = await dependencyInjectServer(server, _methods);
+
+    Joi.assert(
+        methods,
+        Joi.array().items(methodSchema),
+    );
 
     methods.forEach(({ name, method, options }) => {
 

@@ -5,13 +5,17 @@ declare module 'markdown-it-abbr' {
 }
 
 declare module 'markdown-it-emoji' {
+
     import MarkdownIt from 'markdown-it';
-    const plugin = function emoji(md: MarkdownIt): void;
-    export default {
-        bare: plugin,
-        full: plugin,
-        light: plugin,
+    const plugin: (md: MarkdownIt) => void;
+
+    const emoji: {
+        bare: typeof plugin,
+        full: typeof plugin,
+        light: typeof plugin
     };
+
+    export default emoji;
 }
 
 declare module 'markdown-it-footnote' {

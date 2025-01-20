@@ -1,0 +1,16 @@
+{
+    "title": "HapiJS - The simple, secure framework developers trust",
+    "description": "Build powerful, scalable applications, with minimal overhead and full out-of-the-box functionality - your code, your way. Originally developed to handle Walmart’s Black Friday scale, hapi continues to be the proven choice for enterprise-grade backend needs.",
+    "image": "/assets/img/hapi.svg",
+    "keywords": "hapi, hapijs, hapi.js, node, node.js, javascript, framework",
+
+    "robots": "index, follow",
+
+    "fbTitle": "HapiJS - The simple, secure framework developers trust",
+    "fbDescription": "Build powerful, scalable applications, with minimal overhead and full out-of-the-box functionality - your code, your way. Originally developed to handle Walmart’s Black Friday scale, hapi continues to be the proven choice for enterprise-grade backend needs.",
+    "fbImage": "/assets/img/hapi.svg",
+    "twitterTitle": "HapiJS - The simple, secure framework developers trust",
+    "twitterDescription": "Build powerful, scalable applications, with minimal overhead and full out-of-the-box functionality - your code, your way. Originally developed to handle Walmart’s Black Friday scale, hapi continues to be the proven choice for enterprise-grade backend needs.",
+    "twitterImage": "/assets/img/hapi.svg"
+
+}

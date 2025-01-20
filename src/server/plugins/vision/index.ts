@@ -20,7 +20,7 @@ const fromViews = (...paths: string[]) => Path.join(__dirname, '../../../views',
 
 const visionConfig: ServerDependentFn<
     ServerRegisterPluginObject<any>
-> = () => {
+> = (server) => {
 
     const ejsOptions: Ejs.Options = {
 
@@ -29,6 +29,19 @@ const visionConfig: ServerDependentFn<
         ],
         debug: !!process.env.DEBUG
     }
+
+    const {
+        url,
+        data: {
+            metadata,
+            modules,
+            plugins,
+            policies,
+        },
+
+    } = server.appSettings();
+
+    const helpers = ViewHelpers(server);
 
     return {
         plugin: Vision,
@@ -47,8 +60,12 @@ const visionConfig: ServerDependentFn<
             runtimeOptions: ejsOptions,
             compileOptions: ejsOptions,
             context: {
-
-                ...ViewHelpers
+                url,
+                meta: metadata,
+                modules,
+                plugins,
+                policies,
+                ...helpers
             }
         }
     };

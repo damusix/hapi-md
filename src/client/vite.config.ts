@@ -1,5 +1,4 @@
 import { resolve } from 'path'
-import { UserConfig } from 'vite'
 
 
 const config = {
@@ -34,7 +33,11 @@ const config = {
 
     css: {
         preprocessorOptions: {
-            scss: {}
+            scss: {
+                api: 'modern-compiler',
+                quietDeps: true,
+                silenceDeprecations: ['legacy-js-api'],
+            }
         }
     },
 }

@@ -1,30 +1,37 @@
-import { Plugin, Server, ServerRegisterPluginObject, ServerRegisterPluginObjectWrapped } from '@hapi/hapi'
-import { stringify } from '@hapi/hoek'
-
+import { Plugin, ServerRegisterPluginObject } from '@hapi/hapi'
 import Inert from '@hapi/inert'
 
-
-import { MaybePromise, OneOrMany, ServerDependentFn } from '../helpers';
+import { OneOrMany, ServerDependentFn } from '../helpers';
 
 import DevWatch from './_dev/watch';
-
-import Logger, { LoggerOpts } from './logger'
+import Logger, { jsonPrint, LogEvent, LoggerOpts, prettyPrint } from './logger'
 import MdDocs from './md-docs';
 import VisionPlugins from './vision';
+import RssFeed from './rss-feed';
+
+const LOG_PICK_DEFAULT = [
+    'method',
+    'path',
+    'query',
+    'statusCode',
+    'time',
+    'message',
+    'stack',
+    'data',
+];
+
+// Extra log fields to pick
+const LOG_PICK_EXTRA = process.env.APP_LOG_PICK_EXTRA?.split(',') || []
+// All log fields to pick
+const LOG_PICK = process.env.APP_LOG_PICK?.split(',') || LOG_PICK_DEFAULT.concat(LOG_PICK_EXTRA)
 
 const loggerPlugin: ServerRegisterPluginObject<LoggerOpts> = {
 
     plugin: Logger,
     options: {
-        handler: (obj) => process.stdout.write(stringify(obj) + '\n'),
-        pick: [
-            'method',
-            'path',
-            'query',
-            'statusCode',
-            'time',
-            'message'
-        ],
+        handler: process.env.NODE_ENV === 'production' ? jsonPrint : prettyPrint,
+        pick: LOG_PICK as (keyof LogEvent)[],
+        stripStack: process.env.APP_LOG_STRIP_STACK === 'true'
     }
 }
 
@@ -50,6 +57,7 @@ const plugins: (
     inertPlugin,
     ...VisionPlugins,
     MdDocs,
+    RssFeed,
     DevWatch
 ]
 export default plugins;

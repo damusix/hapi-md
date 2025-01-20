@@ -1,33 +1,72 @@
 import Fs from 'fs';
 import Path from 'path';
 
-import { Plugin, ResponseObject, Request } from '@hapi/hapi';
+import { Plugin, ResponseObject, Request, RouteOptionsCache } from '@hapi/hapi';
 import Boom from '@hapi/boom';
 import Hoek from '@hapi/hoek'
 
-import MarkdownMethod from './method';
+import MarkdownMethods from './method';
 import Joi from 'joi';
 
-const internals = {
-
-    docsPath: Path.resolve(__dirname, '../../../docs'),
-    findMarkdownFiles: (path: string) => {
-
-        const files = Fs.readdirSync(path);
-        const markdownFiles = files.filter((file) => file.endsWith('.md'));
-        const directories = files.filter((file) => Fs.statSync(`${path}/${file}`).isDirectory());
-
-        directories.forEach((directory) => {
-
-            const subFiles = internals.findMarkdownFiles(`${path}/${directory}`);
-            markdownFiles.push(...subFiles.map((file) => `${directory}/${file}`));
-        });
-
-        return markdownFiles;
+declare module '@hapi/hapi' {
+    interface RouteOptionsApp {
+        publishedAt?: Date;
+        updatedAt?: Date;
+        title?: string;
+        description?: string;
+        image?: string;
+        author?: string;
+        keywords?: string;
+        excludeFromFeed?: boolean;
     }
 }
 
-const frontmatterSchema = Joi.object({
+const docsPath = Path.resolve(__dirname, '../../../docs');
+
+const findMarkdownFiles = (path: string) => {
+
+    const files = Fs.readdirSync(path);
+    const markdownFiles = files.filter((file) => file.endsWith('.md'));
+    const directories = files.filter((file) => Fs.statSync(`${path}/${file}`).isDirectory());
+
+    directories.forEach((directory) => {
+
+        const subFiles = findMarkdownFiles(`${path}/${directory}`);
+        markdownFiles.push(...subFiles.map((file) => `${directory}/${file}`));
+    });
+
+    return markdownFiles;
+}
+
+type Frontmatter = {
+    title: string;
+    description: string;
+    image: string;
+    author: string;
+
+    slug: string;
+    date: Date;
+    tags: string[];
+    published: boolean;
+
+    layout: string;
+
+    httpHeaders: Record<string, string>;
+    cache: RouteOptionsCache;
+
+    meta: {
+        fbTitle: string;
+        fbDescription: string;
+        fbImage: string;
+
+        twTitle: string;
+        twDescription: string;
+        twImage: string;
+        twAuthor: string;
+    }
+}
+
+const frontmatterSchema = Joi.object<Frontmatter>({
     title: Joi.string().required(),
     description: Joi.string().required(),
     tags: Joi.array().items(Joi.string()),
@@ -35,11 +74,26 @@ const frontmatterSchema = Joi.object({
     published: Joi.boolean().default(false),
     slug: Joi.string(),
     image: Joi.string().uri(),
+    layout: Joi.string().default('main'),
+
+    cache: Joi.alternatives().try(
+        Joi.object({
+            expiresIn: Joi.number(),
+            expiresAt: Joi.string(),
+            privacy: Joi.string(),
+            statuses: Joi.array().items(Joi.number()),
+            otherwise: Joi.string(),
+        }),
+        Joi.boolean()
+    ),
 
     httpHeaders: Joi.object().pattern(
         Joi.string(),
         Joi.string()
-    )
+    ),
+    meta: Joi.object({
+
+    }),
 });
 
 
@@ -48,28 +102,39 @@ const plugin: Plugin<unknown> = {
     name: 'md-docs',
     async register(server) {
 
-        server.method(
-            MarkdownMethod.name,
-            MarkdownMethod.method,
-            MarkdownMethod.options,
-        );
+        MarkdownMethods.forEach((method) => {
 
-        const mdFiles = internals.findMarkdownFiles(internals.docsPath);
+            server.method(
+                method.name,
+                method.method,
+                method.options,
+            );
+        });
+
+        const mdFiles = findMarkdownFiles(docsPath);
 
         for (const mdFile of mdFiles) {
 
-            const content = Fs.readFileSync(`${internals.docsPath}/${mdFile}`, 'utf8');
+            const content = Fs.readFileSync(`${docsPath}/${mdFile}`, 'utf8');
+            const stat = Fs.statSync(`${docsPath}/${mdFile}`);
 
             const { metadata: _meta, html } = await server.methods.markdown(mdFile, content);
 
             Hoek.assert(_meta, Boom.badImplementation(`No frontmatter found in ${mdFile}`));
-            const { error, value: metadata } = frontmatterSchema.validate(_meta);
+
+            const { error, value: _metadata } = frontmatterSchema.validate(_meta);
 
             if (error) {
-                error.cause = `docs/${mdFile}`
+                (error as any).cause = `docs/${mdFile}`
             }
 
             Hoek.assert(!error, error);
+
+            const metadata: Frontmatter = _metadata;
+
+            if (!metadata.published) {
+                continue;
+            }
 
             let slugPath = mdFile.replace('.md', '');
 
@@ -79,16 +144,36 @@ const plugin: Plugin<unknown> = {
 
             metadata.slug = Path.join('/docs', slugPath);
 
+            const publishedAt = metadata.date ? new Date(metadata.date) : undefined;
+            const updatedAt = stat.mtime < (publishedAt || 0) ? publishedAt : stat.mtime;
+
+            const meta = {
+                updatedAt,
+                publishedAt,
+                title: metadata.title,
+                description: metadata.description,
+                image: metadata.image,
+                author: metadata.author,
+                keywords: Array.isArray(metadata.tags) ? metadata.tags.join(',') : (metadata.tags || ''),
+                ...metadata.meta,
+            }
+
             server.route({
                 method: 'GET',
                 path: metadata.slug,
                 handler(_: Request, h) {
 
-                    let res = h
-                        .view('docs', {
-                            html: html
-                        })
-                    ;
+                    const today = new Date();
+
+                    if (publishedAt && today < publishedAt) {
+
+                        return Boom.notFound();
+                    }
+
+                    const context = { meta, html };
+                    const viewOpts = { layout: metadata.layout };
+
+                    let res = h.view('docs', context, viewOpts);
 
                     if (metadata.httpHeaders) {
 
@@ -101,7 +186,16 @@ const plugin: Plugin<unknown> = {
                     return res;
                 },
                 options: {
-                    cache: metadata.cache
+                    cache: metadata.cache,
+                    app: {
+                        publishedAt,
+                        updatedAt,
+                        title: metadata.title,
+                        description: metadata.description,
+                        image: metadata.image,
+                        author: metadata.author,
+                        keywords: metadata.tags?.join(',') || '',
+                    }
                 }
             });
         }

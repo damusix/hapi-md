@@ -1,0 +1,8 @@
+{
+    "permanent": {
+        "/pewp123": "/poop123"
+    },
+    "temporary": {
+        "/pewp": "/poop"
+    }
+}

@@ -1,0 +1,8 @@
+<nav>
+    <h2>Policies</h2>
+    <ul>
+        <% policies.forEach(policy => { %>
+            <li><a href="/policies/<%= policy.slug %>"><%= policy.title %></a></li>
+        <% }) %>
+    </ul>
+</nav>
