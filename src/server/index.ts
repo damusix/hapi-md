@@ -9,7 +9,8 @@ import {
     development,
     production,
     dependencyInjectServer,
-    registerMethods
+    registerMethods,
+    validateEnv
 } from './helpers';
 
 import AppPlugins from './plugins';
@@ -51,29 +52,27 @@ const deployment = async () => {
     /**
      * First, validate the environment
      */
-    if (process.env.NODE_ENV === 'production') {
+    const env = validateEnv(process.env.NODE_ENV);
 
-        Joi.assert(process.env, production);
-    }
-    else {
+    if (!env) {
 
-        Joi.assert(process.env, development);
+        process.exit(1);
     }
 
     /**
      * Create a new server instance
      */
     const server = Hapi.server({
-        port: process.env.APP_PORT,
-        host: 'localhost',
+        port: env.APP_PORT,
+        host: '0.0.0.0',
         routes: {
             files: {
                 relativeTo: Path.join(__dirname, 'assets')
             }
         },
         app: {
-            githubToken: process.env.GITHUB_TOKEN,
-            url: process.env.APP_URL,
+            githubToken: env.GITHUB_TOKEN,
+            url: env.APP_URL,
             data: {
                 policies: Policies,
                 plugins: Plugins,

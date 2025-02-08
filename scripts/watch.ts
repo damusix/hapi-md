@@ -13,11 +13,13 @@ import {
     inputStrings,
     log,
     sh,
-    helpText
+    helpText,
+    saveEnv,
 } from './_helpers';
 
 // We need to create a temporary directory to store the watch.html file
 mkTmpDir();
+process.loadEnvFile();
 
 let watchServer: Server;
 
@@ -92,13 +94,15 @@ const watch = async () => {
         options: {
             onMessage(socket, message) {
 
-                if (message.server) {
+                const msg = message as { server?: boolean; browser?: boolean };
+
+                if (msg.server) {
 
                     log(C.yellow('Backend connected to watch server...'));
                     reload();
                 }
 
-                if (message.browser) {
+                if (msg.browser) {
 
                     log(C.yellow('Browser connected to watch server...'));
                 }
@@ -192,6 +196,36 @@ process.stdin.on('data', (data) => {
             log(C.yellow('Killing process on port'), port);
             sh(`kill -9 $(lsof -t -i:${port})`);
         });
+    }
+
+    // Set environment variables
+    if (cmd.includes('var')) {
+
+        const [_, ...rest] = cmd.split(' ');
+
+        const newEnvs = {} as Record<string, string>;
+
+        for (const item of rest) {
+
+            const [key, ...value] = item.split('=');
+
+            if (key === 'NODE_ENV') {
+
+                log(C.yellow('Cannot set NODE_ENV'));
+                continue;
+            }
+
+            process.env[key] = value.join('=');
+            newEnvs[key] = value.join('=');
+
+            log(C.yellow('Setting environment variable'), key, value);
+
+        }
+
+        saveEnv(newEnvs);
+
+        spawnAndReload('server', 'run server');
+        spawnAndReload('client', 'client', { afterClose: reload });
     }
 
     // Toggle debug mode

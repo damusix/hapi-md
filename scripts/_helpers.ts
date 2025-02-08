@@ -188,7 +188,8 @@ export const helpText = () => {
         [inputStrings.server, 'Restart the server'],
         [inputStrings.client, 'Restart the client'],
         [inputStrings.quit, 'Quit the watcher'],
-        [['kill', '<...port>'], 'Kill a process on a port'],
+        [['kill <...port>'], 'Kill a process on a port'],
+        [['var <key>=<value> ...'], 'Set one or more environment variables. Will save to .env file if not already present.'],
         [['debug'], 'Toggle debug mode'],
         [['help'], 'Show this help text'],
     ];
@@ -216,4 +217,57 @@ export const helpText = () => {
     }).join('\n');
 
     return `\n${txt}\n`;
+}
+
+/**
+ * Save the environment variables to .env file
+ */
+export const saveEnv = (envs: Record<string, string>) => {
+
+    // Load the .env file
+    const env = Fs.readFileSync(
+        resolve(__dirname, '../.env'),
+        'utf8'
+    );
+
+    // Get existing env variables
+    const existing = env.split('\n')
+
+        // Filter out empty lines
+        .filter(line => line.trim() !== '')
+
+        // Filter out comments
+        .filter(line => !line.startsWith('#'))
+
+        // Format the existing variables
+        .map(line => {
+
+            const [key, ...value] = line.split('=');
+
+            return {
+                key,
+                value: value.join('='),
+            };
+        });
+
+    // Get new env variables
+    const newEnv = Object.entries(envs)
+
+        // Filter out existing variables
+        .filter(([key]) => !existing.some(e => e.key === key))
+
+        // Format the new variables
+        .map(([key, value]) => `${key}=${value}`)
+
+        // Join the new variables
+        .join('\n');
+
+    // Append to the end of the file
+    const contents = `${env}\n${newEnv}`;
+
+    // Write the new env variables to the .env file
+    Fs.writeFileSync(
+        resolve(__dirname, '../.env'),
+        contents
+    );
 }

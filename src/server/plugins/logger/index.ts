@@ -246,11 +246,10 @@ const stripStack = (stack: string) => stack
 ;
 
 
-
 export const prettyPrint = (log: LogEvent) => {
 
     const time = gray(
-        new Date(log.time)
+        new Date(log.time || Date.now())
             .toISOString()
             .split('T').join(' ')
             .split('.')[0]

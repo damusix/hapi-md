@@ -7,7 +7,7 @@ import DevWatch from './_dev/watch';
 import Logger, { jsonPrint, LogEvent, LoggerOpts, prettyPrint } from './logger'
 import MdDocs from './md-docs';
 import VisionPlugins from './vision';
-import RssFeed from './rss-feed';
+// import RssFeed from './rss-feed';
 
 const LOG_PICK_DEFAULT = [
     'method',
@@ -57,7 +57,7 @@ const plugins: (
     inertPlugin,
     ...VisionPlugins,
     MdDocs,
-    RssFeed,
+    // RssFeed,
     DevWatch
 ]
 export default plugins;

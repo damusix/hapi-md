@@ -15,6 +15,7 @@ const viewHelpers = (server: Server) => {
      * Make an internal URL from the base URL and the paths
      */
     const makeUrl = (...paths: string[]) => {
+
         const u = new URL(url);
 
         u.pathname = join(u.pathname, ...paths);
