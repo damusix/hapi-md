@@ -1,38 +1,59 @@
 import { resolve } from 'path';
 import Fs from 'fs';
-import { ChildProcess, SpawnSyncOptionsWithBufferEncoding, spawn, spawnSync } from 'child_process';
+import Net from 'net';
+import {
+    ChildProcess,
+    SpawnSyncOptionsWithBufferEncoding,
+    spawn,
+    spawnSync
+} from 'child_process';
 
+import { attemptSync, Deferred } from '@logosdx/kit';
 import C from 'chalk';
+
+/**
+ * Check if a port is occupied
+ *
+ * @param port - The port to check
+ * @param host - The host to check
+ * @returns True if the port is occupied, false otherwise
+ */
+export const portOccupied = (port: number, host: string = '127.0.0.1') => {
+
+    const deferred = new Deferred<boolean>();
+
+    const server = Net.createServer(() => {});
+
+    server.on(
+        'error',
+        () => deferred.resolve(true)
+    );
+
+    server.listen(port, host);
+
+    server.on(
+        'listening',
+        () => server.close(() => deferred.resolve(false))
+    );
+
+    return deferred.promise;
+}
 
 /**
  * Create a temporary directory to store the generated watch files
  */
-export const mkTmpDir = () => {
+export const mkTmpDir = () => (
 
-    try {
-        Fs.mkdirSync(resolve(__dirname, '../tmp'));
-    }
-    catch (e) {}
-}
+    attemptSync(
+        () => Fs.mkdirSync(resolve(import.meta.dirname, '../tmp'))
+    )
+)
 
 /**
  * Resolve a path relative to the scripts directory
  */
-export const fromScripts = (path: string) => resolve(__dirname, path);
+export const fromScripts = (path: string) => resolve(import.meta.dirname, path);
 
-/**
- * Simple debounce function, no need for lodash
- */
-export const debounce = (fn: (...args: any[]) => void, delay: number) => {
-
-    let timer: NodeJS.Timeout;
-
-    return (...args: any[]) => {
-
-        clearTimeout(timer);
-        timer = setTimeout(fn.bind(fn, ...args), delay);
-    }
-}
 
 /**
  * Run a pnpm command in the project directory
@@ -76,20 +97,23 @@ export const spawnAndReload = (
     procKey: keyof typeof procs,
     command: string,
     opts: {
-
+        beforeSpawn?: () => Promise<void> | void;
         afterSpawn?: () => void;
         afterClose?: () => void;
     } = {}
 ) => {
 
     const {
+        beforeSpawn = () => {},
         afterSpawn = () => {},
         afterClose = () => {},
     } = opts;
 
     const proc = procs[procKey];
 
-    const respawn = () => {
+    const respawn = async () => {
+
+        await beforeSpawn();
 
         procs[procKey] = projectProc(command);
 
@@ -144,6 +168,16 @@ export const sh = (args: string, opts?: SpawnSyncOptionsWithBufferEncoding) => {
 }
 
 /**
+ * Kill a process on a port
+ *
+ * @param port - The port to kill
+ */
+export const killPort = (port: number) => {
+
+    sh(`kill -9 $(lsof -t -i:${port})`);
+}
+
+/**
  * Input strings to match against user input
  */
 export const inputStrings = {
@@ -183,40 +217,28 @@ export const log = (...msgs: any[]) => {
  */
 export const helpText = () => {
 
-    const help = [
-        [inputStrings.restart, 'Restart the server and client'],
-        [inputStrings.server, 'Restart the server'],
-        [inputStrings.client, 'Restart the client'],
-        [inputStrings.quit, 'Quit the watcher'],
-        [['kill <...port>'], 'Kill a process on a port'],
-        [['var <key>=<value> ...'], 'Set one or more environment variables. Will save to .env file if not already present.'],
-        [['debug'], 'Toggle debug mode'],
-        [['help'], 'Show this help text'],
-    ];
-
-    const maxLen = help.reduce(
-        (acc, [cmd]) => Math.max(
-            acc,
-            [cmd]
-                .flat()
-                .join(', ')
-                .length
-        ),
-        0
-    );
-
-    const txt = help.map(([cmd, desc]) => {
-
-        const cmdStr = [cmd]
-            .flat(3)
-            .join(', ')
-            .padEnd(maxLen + 2)
-        ;
-
-        return `${C.yellow(cmdStr)}${desc}`;
-    }).join('\n');
-
-    return `\n${txt}\n`;
+    return [
+        'Usage:',
+        '  pnpm dev',
+        '  pnpm kill <port>',
+        '',
+        'Commands:',
+        '  dev - Start the development server',
+        '',
+        'This script does the following:',
+        '  - Starts vite in watch mode',
+        '  - Nodemon watches the server and restarts it when it changes',
+        '  - Creates a watch server that will refresh the browser whenever vite is recompiled, an static file is changed, or the server is restarted',
+        '',
+        'Input strings:',
+        '  rs, reload, restart - Restart all processes',
+        '  server, srv, s - Restart the server only',
+        '  client, cl, c - Restart the client only',
+        '  q, quit, exit - Quit the watcher',
+        '  kill <port> - Kill a process on a port',
+        '  var <key>=<value> ... - Set one or more environment variables. Will save to .env file if not already present.',
+        '  debug - Toggle debug mode',
+    ].join('\n');
 }
 
 /**
@@ -226,7 +248,7 @@ export const saveEnv = (envs: Record<string, string>) => {
 
     // Load the .env file
     const env = Fs.readFileSync(
-        resolve(__dirname, '../.env'),
+        resolve(import.meta.dirname, '../.env'),
         'utf8'
     );
 
@@ -267,7 +289,7 @@ export const saveEnv = (envs: Record<string, string>) => {
 
     // Write the new env variables to the .env file
     Fs.writeFileSync(
-        resolve(__dirname, '../.env'),
+        resolve(import.meta.dirname, '../.env'),
         contents
     );
 }

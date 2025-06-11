@@ -1,11 +1,11 @@
 import Fs from 'fs';
 import Path from 'path';
 
-import { Plugin, ResponseObject, Request, RouteOptionsCache } from '@hapi/hapi';
-import Boom from '@hapi/boom';
-import Hoek from '@hapi/hoek'
+import { Plugin, Request, RouteOptionsCache } from '@hapi/hapi';
+import * as Boom from '@hapi/boom';
+import * as Hoek from '@hapi/hoek'
 
-import MarkdownMethods from './method';
+import MarkdownMethods from './method.ts';
 import Joi from 'joi';
 
 declare module '@hapi/hapi' {
@@ -21,7 +21,7 @@ declare module '@hapi/hapi' {
     }
 }
 
-const docsPath = Path.resolve(__dirname, '../../../docs');
+const docsPath = Path.resolve(import.meta.dirname, '../../../docs');
 
 const findMarkdownFiles = (path: string) => {
 

@@ -1,5 +1,5 @@
-import { RouteOptionsApp, Server, ServerRoute } from '@hapi/hapi'
-import Hoek from '@hapi/hoek';
+import { Server, ServerRoute } from '@hapi/hapi'
+import * as Hoek from '@hapi/hoek';
 
 const getPolicies: (server: Server) => ServerRoute[] = (server) => {
 
@@ -43,7 +43,7 @@ const getPolicies: (server: Server) => ServerRoute[] = (server) => {
                     ...metadata,
                 });
 
-                return h.view('policies', { html, meta, policies }, { layout: 'main' });
+                return h.view('policies', { html, meta, policies });
             },
             options: {
                 app: {

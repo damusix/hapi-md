@@ -7,7 +7,7 @@
 import Nes from '@hapi/nes';
 import C from 'chalk';
 
-const serverWatchClient = new Nes.Client('ws://<%- host %>:<%- port %>');
+const serverWatchClient = new Nes.Client('ws://<%= it.host %>:<%= it.port %>');
 
 export const serverWatchConnect = async () => {
 

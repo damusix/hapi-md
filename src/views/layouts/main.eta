@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ed7d31">
+    <meta name="msapplication-TileColor" content="#ed7d31">
+    <meta name="msapplication-TileImage" content="<%= it.assetUrl('img/hapi.svg') %>">
+
+    <link rel="icon" href="<%= it.assetUrl('img/favicon.png') %>" type="image/svg+xml">
+    <link rel="icon" href="<%= it.assetUrl('img/favicon.png') %>" type="image/png">
+    <link rel="apple-touch-icon" href="<%= it.assetUrl('img/favicon.png') %>">
+
+    <%~ include('@head/seo', it) %>
+    <%~ include('@head/styles', it) %>
+    <%~ include('@head/scripts', it) %>
+
+</head>
+<body>
+
+    <%~ include('@navs/main', it) %>
+
+    <div class='content'>
+        <aside>
+            <%~ include('@navs/side', it) %>
+        </aside>
+
+        <main>
+            <%~ it.body %>
+        </main>
+    </div>
+
+    <%~ include('@scripts/scripts', it) %>
+
+</body>
+</html>

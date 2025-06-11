@@ -1,7 +1,7 @@
 import { Server, ServerMethodOptions } from '@hapi/hapi';
 import Wreck from '@hapi/wreck';
 import Bourne from '@hapi/bourne';
-import { inHours, MethodConfig, sha1 } from '../helpers';
+import { inHours, sha1 } from '../helpers/index.ts';
 
 declare module '@hapi/hapi' {
     interface ServerMethods {
@@ -140,7 +140,7 @@ export default (server: Server) => {
 
         const data = Bourne.parse(payload.toString('utf-8'));
 
-        return data as T;
+        return data as GhGraphqlAllReposResponse;
     };
 
     const ghContent = async (link: string) => {

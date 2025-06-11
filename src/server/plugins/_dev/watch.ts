@@ -20,12 +20,12 @@ export const watchPlugin: Plugin<{}> = {
 
         // Load the generated watch browser html
         const watchHtml = Fs.readFileSync(
-            Path.join(__dirname, '../../../../tmp/watch-browser.html'),
+            Path.join(import.meta.dirname, '../../../../tmp/watch-browser.html'),
             'utf8'
         );
 
-        // Load the generated watch server script
-        const { serverWatchConnect } = await import('../../../../tmp/watch-server');
+        // @ts-ignore - Load the generated watch server script
+        const { serverWatchConnect } = await import('../../../../tmp/watch-server.ts');
 
         // Expose the watch html to the server
         server.method('watchHtml', () => watchHtml);

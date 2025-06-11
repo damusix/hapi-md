@@ -2,11 +2,13 @@
   "name": "website-v2",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "watch": "tsx scripts/watch.ts",
     "server": "tsx src/server/index.ts",
-    "client": "vite build --config src/client/vite.config.ts"
+    "client": "vite build --config src/client/vite.config.ts",
+    "start": "tsx src/server/index.ts"
   },
   "keywords": [],
   "author": "",
@@ -15,14 +17,14 @@
     "@digitalocean/do-markdownit": "^1.16.0",
     "@hapi/boom": "^10.0.1",
     "@hapi/bourne": "^3.0.0",
-    "@hapi/catbox-memory": "github:damusix/catbox-memory#master",
-    "@hapi/hapi": "^21.3.12",
+    "@hapi/catbox-memory": "^6",
+    "@hapi/hapi": "^21.4",
     "@hapi/hoek": "^11.0.7",
     "@hapi/inert": "^7.1.0",
     "@hapi/nes": "^14.0.1",
     "@hapi/vision": "^7.0.3",
     "@hapi/wreck": "^18.1.0",
-    "ejs": "^3.1.10",
+    "@logosdx/kit": "^1.0.1",
     "eta": "^3.5.0",
     "exiting": "^7.0.0",
     "joi": "^17.13.3",
@@ -38,16 +40,12 @@
     "yaml": "^2.7.0"
   },
   "devDependencies": {
-    "@picocss/pico": "^2.0.6",
-    "@types/chalk": "^2.2.0",
-    "@types/ejs": "^3.1.5",
     "@types/markdown-it": "^14",
     "@types/node": "^22",
     "chalk": "^5.4",
-    "sass": "^1.83",
+    "sass": "^1.89",
     "tsx": "^4.19",
-    "typescript": "^5.7",
+    "typescript": "^5.8",
     "vite": "^6"
-  },
-  "packageManager": "pnpm@9.2.0+sha256.94fab213df221c55b6956b14a2264c21c6203cca9f0b3b95ff2fe9b84b120390"
+  }
 }

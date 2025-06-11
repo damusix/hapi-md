@@ -1,6 +1,6 @@
 import { Plugin, ResponseObject, Request } from '@hapi/hapi';
 import Boom from '@hapi/boom';
-import Hoek, { stringify } from '@hapi/hoek'
+import * as Hoek from '@hapi/hoek'
 
 export type LogEvent = {
     time: number;
@@ -140,11 +140,11 @@ const extractRequestData = (request: Request, _filters: LoggerOpts) => {
         completed,
         responded,
         referrer,
-        query: filters.queryFilter(query),
-        params: filters.paramsFilter(params),
-        payload: filters.payloadFilter(payload),
-        headers: filters.headersFilter(headers),
-        state: filters.stateFilter(state),
+        query: filters.queryFilter?.(query),
+        params: filters.paramsFilter?.(params),
+        payload: filters.payloadFilter?.(payload),
+        headers: filters.headersFilter?.(headers),
+        state: filters.stateFilter?.(state),
         auth,
         pre,
         data,
@@ -154,7 +154,7 @@ const extractRequestData = (request: Request, _filters: LoggerOpts) => {
 
     for (const key of omit) {
 
-        delete _log[key];
+        delete _log[key as keyof typeof _log];
     }
 
     if (pick && pick.length !== 0) {
@@ -162,7 +162,7 @@ const extractRequestData = (request: Request, _filters: LoggerOpts) => {
         const picked = {} as Record<string, any>;
 
         for (const key of pick) {
-            picked[key] = _log[key];
+            picked[key] = _log[key as keyof typeof _log];
         }
 
         picked.type = type;
@@ -182,7 +182,7 @@ const undefinedOrFunc = (
 );
 
 
-export const jsonPrint = (obj: LogEvent) => process.stdout.write(stringify(obj) + '\n')
+export const jsonPrint = (obj: LogEvent) => process.stdout.write(Hoek.stringify(obj) + '\n')
 
 const rgb = (r: number, g: number, b: number) => `\x1b[38;2;${r};${g};${b}m`;
 
@@ -254,37 +254,37 @@ export const prettyPrint = (log: LogEvent) => {
             .split('T').join(' ')
             .split('.')[0]
     );
-    let ip = gray(log.ip);
+    let ip = gray(log.ip!);
 
     const logIcon = icons[log.type] || icons.log;
     const logFn = types[log.type] || types.log;
     let type = logFn(log.type);
-    let statusCode = green(log.statusCode);
-    let method = yellow(log.method);
-    let path = white(log.path);
+    let statusCode = green(log.statusCode!);
+    let method = yellow(log.method!);
+    let path = white(log.path!);
 
     let message = log.message ? white(log.message) : undefined;
     let stack: string | undefined = undefined;
 
     if (log.isError) {
         type = red(log.type);
-        statusCode = red(log.statusCode);
-        stack = '\n' + red(log.stack) + '\n';
+        statusCode = red(log.statusCode!);
+        stack = '\n' + red(log.stack!) + '\n';
     }
 
-    let query = undefined as string
-    let payload = undefined as string
-    let params = undefined as string
-    let headers = undefined as string
-    let state = undefined as string
+    let query = undefined as unknown as string;
+    let payload = undefined as unknown as string;
+    let params = undefined as unknown as string;
+    let headers = undefined as unknown as string;
+    let state = undefined as unknown as string;
 
     if (log.type === 'request') {
 
-        query = stringify(log.query, null, 2)
-        state = log.state && '\nState: ' + stringify(log.state, null, 2) + '\n'
-        payload = log.payload && '\nPayload: ' + stringify(log.payload, null, 2) + '\n'
-        params = log.params && '\nParams: ' + stringify(log.params, null, 2) + '\n'
-        headers = log.headers && '\nHeaders: ' + stringify(log.headers, null, 2) + '\n'
+        query = Hoek.stringify(log.query, null, 2)
+        state = log.state as string && '\nState: ' + Hoek.stringify(log.state, null, 2) + '\n'
+        payload = log.payload as string && '\nPayload: ' + Hoek.stringify(log.payload, null, 2) + '\n'
+        params = log.params as string && '\nParams: ' + Hoek.stringify(log.params, null, 2) + '\n'
+        headers = log.headers as string && '\nHeaders: ' + Hoek.stringify(log.headers, null, 2) + '\n'
     }
 
     process.stdout.write(
@@ -302,7 +302,7 @@ export const prettyPrint = (log: LogEvent) => {
             headers,
             state,
             message || '',
-            stack
+            stack || ''
         ) + '\n'
     )
 }

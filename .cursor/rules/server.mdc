@@ -1,0 +1,21 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+SERVER FRAMEWORK
+
+- References to `Server` are always in reference to `@hapi/hapi`'s `Server` class.
+- References to `Request` are always in reference to `@hapi/hapi`'s `Request` class.
+- References to `Response` are always in reference to `@hapi/hapi`'s `Response` class.
+
+- Application settings are typed in Hapi's `ServerApplicationState` interface and are accessed via a custom decorator `server.appSettings()`.
+- Application settings are always validated in `src/server/helpers/environment.ts`
+
+VIEWS ENGINE
+
+- Eta partials are always stored in `views/partials` and are named like `my-sample-partial.eta`. They are typically scoped to a folder such as `partials/head` or `partials/my-sample-subfolder`.
+- Eta layouts are always stored in `views/layouts` and are named like `my-sample-layout.eta`.
+- Eta pages are always stored in `views/pages` and are named like `my-sample-page.eta`.
+- Eta templates should be aware of the context defined in `src/server/plugins/vision/**/*.ts`.
+- Eta templates should be aware of the helpers in `views/helpers/**/*.ts`.
