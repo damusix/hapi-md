@@ -1,37 +1,33 @@
 import Path from 'path'
-import Ejs from 'ejs';
+import { Eta, Options as EtaOptions } from 'eta';
 
 import {
     Plugin,
     Request,
     ResponseObject,
     ResponseToolkit,
-    Server,
     ServerRegisterPluginObject
 } from '@hapi/hapi';
 
 import Vision from '@hapi/vision'
-import Hoek from '@hapi/hoek';
+import * as Hoek from '@hapi/hoek';
 
-import ViewHelpers from '../../../views/helpers';
-import { ServerDependentFn } from '../../helpers';
+import ViewHelpers from '../../../views/helpers/index.ts';
+import { ServerDependentFn } from '../../helpers/index.ts';
 
-const fromViews = (...paths: string[]) => Path.join(__dirname, '../../../views', ...paths);
+const fromViews = (...paths: string[]) => Path.join(import.meta.dirname, '../../../views', ...paths);
 
 const visionConfig: ServerDependentFn<
     ServerRegisterPluginObject<any>
 > = (server) => {
 
-    const ejsOptions: Ejs.Options = {
+    const etaOptions: EtaOptions = {
 
-        views: [
-            fromViews(),
-        ],
-        debug: !!process.env.DEBUG
+        filepath: fromViews(),
+        async: true,
     }
 
     const {
-        url,
         data: {
             metadata,
             modules,
@@ -43,24 +39,47 @@ const visionConfig: ServerDependentFn<
 
     const helpers = ViewHelpers(server);
 
+    const eta = new Eta({
+
+        views: fromViews(),
+        cache: process.env.NODE_ENV === 'production',
+        debug: process.env.NODE_ENV === 'development',
+        functionHeader: "Object.entries({...it}||{}).forEach(([k,v])=>globalThis[k]=v);"
+    });
+
+    const engine = {
+        compile: (src: string, options: EtaOptions) => {
+
+            const compiled = eta.compile(src, options);
+
+            return (context: any) => {
+
+                const answer = eta.render(compiled, context);
+
+                return answer;
+            };
+        },
+        registerPartial: (name: string, src: string) => {
+
+            eta.loadTemplate(`@${name}`, src);
+        },
+
+    }
+
     return {
         plugin: Vision,
         options: {
-
             engines: {
-                html: Ejs,
-                ejs: Ejs
+                html: engine,
+                eta: engine,
             },
             relativeTo: fromViews(),
             path: `./pages`,
-            layoutPath: `./layouts`,
             partialsPath: `./partials`,
-            layout: './main',
-            defaultExtension: 'ejs',
-            runtimeOptions: ejsOptions,
-            compileOptions: ejsOptions,
+            defaultExtension: 'eta',
+            runtimeOptions: etaOptions,
+            compileOptions: etaOptions,
             context: {
-                url,
                 meta: metadata,
                 modules,
                 plugins,

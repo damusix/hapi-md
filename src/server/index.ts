@@ -11,11 +11,11 @@ import {
     dependencyInjectServer,
     registerMethods,
     validateEnv
-} from './helpers';
+} from './helpers/index.ts';
 
-import AppPlugins from './plugins';
-import AppRoutes from './routes';
-import AppMethods from './methods';
+import AppPlugins from './plugins/index.ts';
+import AppRoutes from './routes/index.ts';
+import AppMethods from './methods/index.ts';
 
 import {
     Policies,
@@ -23,7 +23,7 @@ import {
     Modules,
     Redirects,
     Metadata
-} from './data';
+} from './data/index.ts';
 
 declare module '@hapi/hapi' {
     interface ServerApplicationState {
@@ -67,7 +67,7 @@ const deployment = async () => {
         host: '0.0.0.0',
         routes: {
             files: {
-                relativeTo: Path.join(__dirname, 'assets')
+                relativeTo: Path.join(import.meta.dirname, 'assets')
             }
         },
         app: {
@@ -118,18 +118,22 @@ const deployment = async () => {
     server.ext('onRequest', (request, h) => {
 
         const { permanent, temporary } = request.appSettings().data.redirects;
+        type PermPath = keyof typeof permanent;
+        type TempPath = keyof typeof temporary;
 
-        if (permanent[request.path]) {
+        const path = request.path as PermPath | TempPath;
+
+        if (path in permanent) {
             return h
-                .redirect(permanent[request.path])
+                .redirect(permanent[path as PermPath])
                 .permanent()
                 .takeover()
             ;
         }
 
-        if (temporary[request.path]) {
+        if (path in temporary) {
             return h
-                .redirect(temporary[request.path])
+                .redirect(temporary[path as TempPath])
                 .temporary()
                 .takeover()
             ;
@@ -161,7 +165,7 @@ const deployment = async () => {
     return server;
 }
 
-if (require.main === module) {
+if (import.meta.url === new URL(import.meta.url).href) {
 
     deployment();
 }

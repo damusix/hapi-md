@@ -12,7 +12,7 @@
      */
     (async () => {
 
-        const __$client = new nes.Client('ws://<%- host %>:<%- port %>');
+        const __$client = new nes.Client('ws://<%= it.host %>:<%= it.port %>');
 
         let retries = 0;
         __$client.onError = (error) => {

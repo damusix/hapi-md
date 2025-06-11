@@ -1,0 +1,5 @@
+<% layout('./layouts/main.eta', it) %>
+
+<h1>Policies</h1>
+
+<%~ html %>

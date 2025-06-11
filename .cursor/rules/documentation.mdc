@@ -1,0 +1,17 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+MARKDOWN DOCS
+
+- Markdown files are always stored in `src/docs/**/*.md`.
+- Markdown files are declared, validated, and processed in the `src/server/plugins/md-docs/**/*.ts` plugin.
+- Markdown files can contain frontmatter that:
+- contains SEO metadata via `title`, `description`, `tags`, `date`, `image`, and `meta`
+- contains cache data that is used to set route options cache as defined by `RouteOptionsCache` interface in `@hapi/hapi`
+- contains `httpHeaders` data that is used to set response `httpHeaders`
+- contains `layout` data that is used to set the layout for the page
+- can be published or not via `published` boolean
+- can be future-dated via `date`
+- is flagged as `updatedAt` by either `date` or the file's last modified date, whichever is more recent.

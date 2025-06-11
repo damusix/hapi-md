@@ -5,11 +5,11 @@ const config = {
     build: {
         lib: {
 
-            entry: resolve(__dirname, 'app.ts'),
+            entry: resolve(import.meta.dirname, 'app.ts'),
             name: 'Hapi',
             formats: ['iife']
         },
-        outDir: resolve(__dirname, '../server/assets/build'),
+        outDir: resolve(import.meta.dirname, '../server/assets/build'),
         target: 'es2020',
         sourcemap: true,
         minify: true,

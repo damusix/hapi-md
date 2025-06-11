@@ -1,0 +1,19 @@
+<!-- SEO meta tags here -->
+
+<title><%= it.metaOrDefault(meta.title, 'title') %></title>
+
+<meta name="description" content="<%= it.metaOrDefault(meta.description, 'description') %>">
+<meta name="keywords" content="<%= it.metaOrDefault(meta.keywords, 'keywords') %>">
+<meta name="author" content="<%= it.metaOrDefault(meta.author, 'author') %>">
+<meta name="robots" content="<%= it.metaOrDefault(meta.robots, 'robots') %>">
+
+<meta property="og:title" content="<%= it.metaOrDefault(meta.title, 'title') %>">
+<meta property="og:description" content="<%= it.metaOrDefault(meta.description, 'description') %>">
+<meta property="og:image" content="<%= it.metaOrDefault(meta.image, 'image') %>">
+<meta property="og:url" content="<%= it.metaOrDefault(meta.url, 'url') %>">
+
+<meta property="twitter:title" content="<%= it.metaOrDefault(meta.title, 'title') %>">
+<meta property="twitter:description" content="<%= it.metaOrDefault(meta.description, 'description') %>">
+<meta property="twitter:image" content="<%= it.metaOrDefault(meta.image, 'image') %>">
+<meta property="twitter:url" content="<%= it.metaOrDefault(meta.url, 'url') %>">
+

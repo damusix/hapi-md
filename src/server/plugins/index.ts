@@ -1,12 +1,12 @@
 import { Plugin, ServerRegisterPluginObject } from '@hapi/hapi'
 import Inert from '@hapi/inert'
 
-import { OneOrMany, ServerDependentFn } from '../helpers';
+import { OneOrMany, ServerDependentFn } from '../helpers/index.ts';
 
-import DevWatch from './_dev/watch';
-import Logger, { jsonPrint, LogEvent, LoggerOpts, prettyPrint } from './logger'
-import MdDocs from './md-docs';
-import VisionPlugins from './vision';
+import DevWatch from './_dev/watch.ts';
+import Logger, { jsonPrint, LogEvent, LoggerOpts, prettyPrint } from './logger/index.ts'
+import MdDocs from './md-docs/index.ts';
+import VisionPlugins from './vision/index.ts';
 // import RssFeed from './rss-feed';
 
 const LOG_PICK_DEFAULT = [
@@ -59,5 +59,6 @@ const plugins: (
     MdDocs,
     // RssFeed,
     DevWatch
-]
+] as const;
+
 export default plugins;

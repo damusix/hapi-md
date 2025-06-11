@@ -2,26 +2,33 @@ import Fs, { WatchListener } from 'fs';
 
 import Hapi, { Server } from '@hapi/hapi';
 import Nes from '@hapi/nes';
-import Ejs from 'ejs';
+
+import { Eta } from 'eta';
 import C from 'chalk';
+import { debounce, wait } from '@logosdx/kit'
 
 import {
-    debounce,
     fromScripts,
     spawnAndReload,
     mkTmpDir,
     inputStrings,
     log,
     sh,
+    killPort,
     helpText,
     saveEnv,
-} from './_helpers';
+    portOccupied,
+} from './_helpers.ts';
 
 // We need to create a temporary directory to store the watch.html file
 mkTmpDir();
 process.loadEnvFile();
 
 let watchServer: Server;
+
+const eta = new Eta({
+    views: fromScripts('./tmpl')
+});
 
 // Track changed files
 const changed = new Set<string>();
@@ -51,7 +58,36 @@ const enactChanges = debounce((from: string) => {
         from.includes('views')
     ) {
 
-        spawnAndReload('server', 'run server');
+        const beforeSpawn = async (attempt: number = 0) => {
+
+            const APP_PORT = process.env.APP_PORT;
+
+            if (!APP_PORT) {
+                return;
+            }
+
+            if (attempt > 3) {
+
+                log(C.red('Port is still occupied, killing process...'));
+                killPort(Number(APP_PORT));
+
+                await wait(500);
+
+                return;
+            }
+
+            const occupied = await portOccupied(Number(APP_PORT));
+
+            if (occupied) {
+
+                log(C.red('Port is occupied, waiting for it to be released...'));
+                await wait(1000);
+                return beforeSpawn(attempt + 1);
+            }
+
+        }
+
+        spawnAndReload('server', 'run server', { beforeSpawn });
     }
 
     // If the changes are from the client, restart the client
@@ -71,11 +107,11 @@ const listener: (from: string) => WatchListener<string> = (from) => (
     (_, filename) => {
 
         // Ignore changes to the build directory
-        if (filename.includes('assets/build')) {
+        if (filename?.includes('assets/build')) {
             return;
         }
 
-        changed.add(filename);
+        changed.add(filename!);
         enactChanges(from);
     }
 );
@@ -92,7 +128,7 @@ const watch = async () => {
     await server.register({
         plugin: Nes,
         options: {
-            onMessage(socket, message) {
+            onMessage(_socket, message) {
 
                 const msg = message as { server?: boolean; browser?: boolean };
 
@@ -123,25 +159,27 @@ const watch = async () => {
     Fs.watch(fromScripts('../src/server'), { recursive: true },  listener('server'))
     Fs.watch(fromScripts('../src/docs'), { recursive: true }, listener('docs'))
     Fs.watch(fromScripts('../src/views'), { recursive: true }, listener('views'))
-
     Fs.watch(fromScripts('../src/client'), { recursive: true }, listener('client'))
 
     // Create a watch-browser.html file to serve the client
-    const watchHtmlScript = Ejs.render(
-        Fs.readFileSync(fromScripts('tmpl/watch-browser.ejs')).toString('utf-8'),
+    const watchHtmlScript = eta.renderString(
+        Fs.readFileSync(fromScripts('tmpl/watch-browser.eta')).toString('utf-8'),
         server.info
     );
 
     // Create a watch-server.ts file to connect the server to the client
-    const watchServerScript = Ejs.render(
-        Fs.readFileSync(fromScripts('tmpl/watch-server.ts.ejs')).toString('utf-8'),
+    const watchServerScript = eta.renderString(
+        Fs.readFileSync(fromScripts('tmpl/watch-server.ts.eta')).toString('utf-8'),
         server.info
     );
 
     Fs.writeFileSync(fromScripts('../tmp/watch-browser.html'), watchHtmlScript);
     Fs.writeFileSync(fromScripts('../tmp/watch-server.ts'), watchServerScript);
 
-    log(helpText());
+    setTimeout(() => {
+
+        log(helpText());
+    }, 1000);
 }
 
 watch();
@@ -194,7 +232,7 @@ process.stdin.on('data', (data) => {
         ports.forEach((port) => {
 
             log(C.yellow('Killing process on port'), port);
-            sh(`kill -9 $(lsof -t -i:${port})`);
+            killPort(Number(port));
         });
     }
 

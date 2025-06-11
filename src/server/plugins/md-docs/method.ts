@@ -5,14 +5,13 @@ import MarkdownItAnchor from 'markdown-it-anchor';
 import MarkdownItTOC from 'markdown-it-table-of-contents';
 import MarkdownItFm from 'markdown-it-front-matter';
 import MarkdownItAbbr from 'markdown-it-abbr';
-import MarkdownItEmoji from 'markdown-it-emoji';
+import * as MarkdownItEmoji from 'markdown-it-emoji';
 import MarkdownItFootnote from 'markdown-it-footnote';
 import MarkdownTaskList from 'markdown-it-task-lists';
 
-import MarkdownItDO from '@digitalocean/do-markdownit';
 import Yaml from 'yaml';
 
-import { sha1, inMinutes, inHours } from '../../helpers';
+import { sha1, inHours } from '../../helpers/index.ts';
 
 declare module '@hapi/hapi' {
 
@@ -49,7 +48,6 @@ const markdown = new MarkdownIt({
         return `<pre><code class="language-${lang}">${str}</code></pre>`;
     },
 })
-    .use(MarkdownItDO, {})
     .use(MarkdownItFm, internals.getFrontmatterYaml)
     .use(MarkdownItAbbr)
     .use(MarkdownItEmoji.full)
